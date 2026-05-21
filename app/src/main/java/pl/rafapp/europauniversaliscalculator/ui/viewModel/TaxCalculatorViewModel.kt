@@ -1,16 +1,8 @@
-package pl.rafapp.europauniversaliscalculator.ui.viewModel
-
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.launch
-import pl.rafapp.europauniversaliscalculator.data.TaxCalculatorRepository
-import pl.rafapp.europauniversaliscalculator.data.TaxCalculatorRepositoryImpl
-import pl.rafapp.europauniversaliscalculator.data.UiState
 
 class TaxCalculatorViewModel(private val repository: TaxCalculatorRepository) : ViewModel() {
 
@@ -28,19 +20,34 @@ class TaxCalculatorViewModel(private val repository: TaxCalculatorRepository) : 
         plagueTaxIncome: Double
     ) {
         viewModelScope.launch {
-            repository.calculateIncome(
-                baseTax, vassalTax, emperorIncome,
-                regularUnits, mercenaryUnits, ships,
-                loans, plagueTaxIncome
-            )
-                .catch { e -> _uiState.value = UiState.Error(e.message ?: "Unknown error") }
-                .collect { state -> _uiState.value = state }
+            try {
+                val income = repository.calculateIncome(
+                    baseTax,
+                    vassalTax,
+                    emperorIncome,
+                    regularUnits,
+                    mercenaryUnits,
+                    ships,
+                    loans,
+                    plagueTaxIncome
+                )
+                _uiState.value = UiState.Success(income, CorruptionLevel.Low)
+            } catch (e: Exception) {
+                _uiState.value = UiState.Error(e.message ?: "An error occurred")
+            }
         }
     }
+}
 
-    companion object {
-        val Factory = viewModelFactory {
-            initializer { TaxCalculatorViewModel(TaxCalculatorRepositoryImpl()) }
-        }
-    }
+sealed class UiState {
+    data class Success(val income: Double, val corruptionLevel: CorruptionLevel) : UiState()
+    object Loading : UiState()
+    data class Error(val message: String) : UiState()
+}
+
+sealed class CorruptionLevel(val value: Int) {
+    object Low : CorruptionLevel(0)
+    object Medium : CorruptionLevel(1)
+    object High : CorruptionLevel(2)
+    object VeryHigh : CorruptionLevel(3)
 }

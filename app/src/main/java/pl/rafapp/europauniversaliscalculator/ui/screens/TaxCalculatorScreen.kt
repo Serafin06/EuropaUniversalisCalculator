@@ -282,6 +282,27 @@ fun TaxCalculatorScreen(
                 PowerField("MIL", advisorMil, { advisorMil = it }, Color(0xFFE84B4B), Modifier.weight(1f))
             }
 
+            // po sekcji Monarch Power, przed Spacer(Modifier.height(16.dp))
+            Button(
+                onClick = {
+                    baseTax = ""; vassalTax = ""; emperorIncome = ""; ideasIncome = ""
+                    stabilityMod = 0
+                    regularUnits = ""; mercenaryUnits = ""; ships = ""; loans = ""
+                    plagueTaxIncome = ""; advisor1 = ""; advisor2 = ""; advisor3 = ""
+                    isPapal = false
+                    rulerAdm = ""; rulerDip = ""; rulerMil = ""
+                    advisorAdm = ""; advisorDip = ""; advisorMil = ""
+                    isEmperor = false
+                },
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(containerColor = Color(0xFF2E1A1A)),
+                shape = RoundedCornerShape(8.dp)
+            ) {
+                Icon(Icons.Filled.Refresh, contentDescription = null, tint = AccentRed, modifier = Modifier.size(16.dp))
+                Spacer(Modifier.width(8.dp))
+                Text("RESET ALL", color = AccentRed, fontWeight = FontWeight.Bold)
+            }
+
             // Live power result
             Row(
                 modifier = Modifier.fillMaxWidth().padding(top = 4.dp),

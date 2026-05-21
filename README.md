@@ -1,84 +1,154 @@
-# Europa Universalis Calculator - Tax & Payout Calculator Module 🧮💶
+# Europa Universalis Calculator 🎮
 
-A native Android application built with **Kotlin** and **Jetpack Compose**. This micro-app serves as an Economy Phase calculator for the board game *Europa Universalis: The Price of Power*. It will later be integrated into the broader **EUHelper** app.
+A native Android application built in **Kotlin + Jetpack Compose** to help **Europa Universalis (board game)** players quickly calculate Tax Income, Costs and Monarch Power during gameplay.
 
----
+## 📱 Features
 
-## 🤖 AI Context & Instructions (For Aider / Continue)
-> **Attention AI Assistant:** Read this section carefully before generating code.
+- **Live Tax Calculation**: Income, Costs and Net update in real-time as you type
+- **Income Tracking**: Base Tax, Vassal Tax, Emperor Income, Ideas Income
+- **Cost Tracking**: Advisors, Regular Units, Mercenaries, Ships, Loans, Plague
+- **Monarch Power**: ADM / DIP / MIL calculation from Ruler + Advisor skills
+- **Papal Controller**: Toggle with automatic -1D discount per Advisor and +1 ADM bonus
+- **HRE Emperor**: Toggle with rules reminder for E bonuses
+- **Stability Modifier**: Quick chip selector for -3s / 0 / +3s
+- **Plague Cost**: Auto-calculates ½D loss per 1D of affected Tax Income
+- **In-app Rule Reminders**: Expandable info boxes for Papal, Emperor and Base Tax rules
+- **Reset**: One-tap reset of all fields
+- **Dark Theme**: EU-themed dark UI (navy & gold)
 
-### Core Architecture Guidelines:
-1. **Language:** Kotlin.
-2. **UI Toolkit:** Jetpack Compose.
-3. **Architecture:** MVVM (Model-View-ViewModel).
-    - `Model`: Data classes representing the game state (Income, Costs, Units).
-    - `ViewModel`: Handles the mathematical logic for Phase B (Income minus Costs) and Phase C (Corruption).
-    - `UI`: Reactive Compose screens that update immediately as parameters change.
-4. **Current Scope:** No external database or backend is needed right now. Everything runs locally in memory.
+## 🎯 Perfect for EU Board Game Players Who Want To:
 
----
+- Calculate net income instantly without pen and paper
+- Avoid mistakes with Advisor discounts and plague penalties
+- Track Monarch Power across all three types simultaneously
+- Get quick rule reminders mid-game without opening the rulebook
 
-## 🎲 Game Logic & Calculation Rules
+## 🛠️ Technical Stack
 
-The calculator must handle the following Economy Phase steps:
+- **Language**: Kotlin
+- **UI**: Jetpack Compose + Material 3
+- **Architecture**: MVVM (ViewModel + Repository)
+- **State**: StateFlow + derivedStateOf for live updates
+- **Min SDK**: 26
 
-### Phase A: Cut Costs (UI Toggles / Adjustments)
-The user adjusts their current state before calculation:
-* Number of Advisors (and their individual upkeep: 1-4D).
-* Number of Deployed Military Units (Regular, Mercenary).
-* Number of Ships remaining at sea.
+## 📁 Project Structure
 
-### Phase B: Collect Income minus Costs
-The `ViewModel` must calculate the net Ducats (D) based on these inputs:
-
-**INCOME (+):**
-* **Base Tax Income:** Input from Town Tracks.
-* **Vassal Tax Income:** Input from Vassal Track.
-* **Emperor's E:** Equal to the Emperor value input.
-* **Bureaucracy Idea:** Toggle (true/false) adding respective income.
-* **Positive Stability (s):** Toggle, adds +2D.
-
-**COSTS (-):**
-* **Advisor Upkeep:** Sum of cost of all Advisors.
-    * *Modifier:* If "Papal Controller" is true, subtract 1D per Advisor.
-* **Military Maintenance:**
-    * 1D per Regular Unit.
-    * 2D per Mercenary Unit.
-    * 0.5D (½D) per Ship remaining at sea.
-* **Interest on Loans:** 1D per Loan.
-* **Plague Effects:** Lose 0.5D (½D) per 1D of Tax Income from Areas with Plague.
-* **Negative Stability (s):** Toggle, subtracts -2D.
-
-### Phase C: Corruption
-Calculate the cost of keeping Ducats in the Treasury after Phase B.
-* **0–49 D:** No cost.
-* **50–59 D:** 1a (Monarch Power) cost OR gain 1 Corruption.
-* **60–69 D:** 2a cost OR gain Corruption per unpaid 'a'.
-* **70–79 D:** 3a cost, etc.
-* *Formula:* For every full 10D starting from 50D, the cost increases by 1a.
-
----
-
-## 📁 Recommended Project Structure
-
-```text
-app/src/main/java/com/euhelper/calculator/
-├── MainActivity.kt
-├── model/
-│   ├── EconomyState.kt       # Data classes for inputs
-│   └── CalculationResult.kt  # Data classes for outputs
-├── viewmodel/
-│   └── EconomyViewModel.kt   # Core math and logic (Phases B & C)
-└── ui/
-    ├── screens/
-    │   └── CalculatorScreen.kt # Main Compose UI
-    └── components/           # Reusable sliders, toggles, and cards
 ```
---- 
+app/src/main/java/pl/rafapp/europauniversaliscalculator/
+├── data/
+│   ├── TaxCalculatorRepository.kt   # Interface + Impl with calculation logic
+│   └── UiState.kt                   # Sealed UiState + CorruptionLevel
+├── ui/
+│   ├── screens/
+│   │   └── TaxCalculatorScreen.kt   # Main Composable screen
+│   ├── viewModel/
+│   │   └── TaxCalculatorViewModel.kt # ViewModel with Factory
+│   └── theme/
+│       └── EuropaUniversalisCalculatorTheme.kt
+└── MainActivity.kt                  # Entry point
+```
 
-## 🛠️ Getting Started
-Open in Android Studio.
+## 🚀 Getting Started
 
-Sync Gradle files.
+### Prerequisites
 
-Run on an Android Emulator or physical device.
+- Android Studio Hedgehog or newer
+- Android SDK 26+
+- Kotlin 1.9+
+
+### Installation
+
+1. **Clone the repository**
+   ```bash
+   git clone https://github.com/Serafin06/europa-universalis-calculator.git
+   cd europa-universalis-calculator
+   ```
+
+2. **Open in Android Studio**
+    - File → Open → select the project folder
+
+3. **Run the app**
+    - Select a device or emulator (API 26+)
+    - Press ▶ Run
+
+### Building for Release
+
+```bash
+# Debug APK
+./gradlew assembleDebug
+
+# Release APK
+./gradlew assembleRelease
+```
+
+## 📋 How to Use
+
+1. **Income section** — enter Base Tax (Small + Large Town Track combined), Vassal Tax, Emperor and Ideas income
+2. **Stability** — tap the chip matching your current stability modifier
+3. **Costs section** — fill in Advisor costs (1–4D each), unit counts, loans and plague income
+4. **Papal Controller** — toggle on if you control the Papacy (auto-applies discount)
+5. **Monarch Power** — enter Ruler and Advisor skill values to see ADM/DIP/MIL totals
+6. **Live bar** at the top shows Income / Costs / Net instantly
+7. **Reset** — tap the reset button to clear all fields for the next round
+
+## 🧮 Calculation Logic
+
+| Source | Formula |
+|---|---|
+| Base Tax | Town Track Small + Large |
+| Vassal Tax | Vassal Track value |
+| Stability bonus | +3s → +2D, -3s → -2D |
+| Advisor upkeep | 1–4D per Advisor (Papal: -1D each) |
+| Regular Units | 1D per unit |
+| Mercenaries | 2D per unit |
+| Ships at Sea | ½D per ship |
+| Loans | 1D per loan |
+| Plague | ½D × Tax Income from plague areas |
+
+## 🤝 Contributing
+
+1. Fork the repository
+2. Create a feature branch (`git checkout -b feature/amazing-feature`)
+3. Commit your changes (`git commit -m 'Add amazing feature'`)
+4. Push to the branch (`git push origin feature/amazing-feature`)
+5. Open a Pull Request
+
+### Areas for Contribution
+
+- [ ] Corruption cost calculator (D thresholds → Admin cost)
+- [ ] Prestige scoring (Papal / Emperor / Absolute Monarchy)
+- [ ] Save/load game state between sessions
+- [ ] Multiple player tracking
+- [ ] Unit tests for TaxCalculatorRepository
+- [ ] English / Polish language toggle
+
+## 🐛 Bug Reports
+
+Found a bug? Please create an issue with:
+
+- Device info (Android version, manufacturer)
+- Steps to reproduce
+- Expected vs actual behaviour
+- Screenshot if applicable
+
+## 📄 License
+
+This project is licensed under the MIT License — see the [LICENSE](LICENSE) file for details.
+
+## 🙏 Acknowledgments
+
+- **Aegir Games** for creating the Europa Universalis board game
+- **Paradox Interactive** for the original EU4 video game
+- **JetBrains / Google** for Kotlin and Jetpack Compose
+- EU board game community for rules clarifications and feedback
+
+## 📞 Contact
+
+- **GitHub**: [@Serafin06](https://github.com/Serafin06)
+- **Issues**: [GitHub Issues](https://github.com/Serafin06/europa-universalis-calculator/issues)
+
+---
+
+**Happy conquering, and may your treasury never run dry!** 🏰⚔️
+
+> *"He who controls the taxes, controls the empire."*

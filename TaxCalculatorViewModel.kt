@@ -1,4 +1,4 @@
-package pl.rafapp.europauniversaliscalculator.viewmodel
+package pl.rafapp.europauniversaliscalculator.ui.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope

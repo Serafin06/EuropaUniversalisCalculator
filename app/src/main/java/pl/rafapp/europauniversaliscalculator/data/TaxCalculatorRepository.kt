@@ -1,13 +1,8 @@
 package pl.rafapp.europauniversaliscalculator.data
 
 import kotlinx.coroutines.flow.Flow
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.update
+import kotlinx.coroutines.flow.flow
 
-/**
- * Repository for calculating tax income.
- */
 sealed class UiState {
     data class Success(val income: Double, val corruptionLevel: CorruptionLevel) : UiState()
     object Loading : UiState()
@@ -21,9 +16,6 @@ sealed class CorruptionLevel(val value: Int) {
     object VeryHigh : CorruptionLevel(3)
 }
 
-/**
- * Interface for calculating tax income.
- */
 interface TaxCalculatorRepository {
     fun calculateIncome(
         baseTax: Double,
@@ -33,15 +25,11 @@ interface TaxCalculatorRepository {
         mercenaryUnits: Int,
         ships: Int,
         loans: Int,
-        plagueMultiplier: Double
+        plagueTaxIncome: Double
     ): Flow<UiState>
 }
 
-/**
- * Implementation of TaxCalculatorRepository.
- */
 class TaxCalculatorRepositoryImpl : TaxCalculatorRepository {
-    private val _incomeFlow = MutableStateFlow<UiState>(Loading)
     override fun calculateIncome(
         baseTax: Double,
         vassalTax: Double,
@@ -50,8 +38,21 @@ class TaxCalculatorRepositoryImpl : TaxCalculatorRepository {
         mercenaryUnits: Int,
         ships: Int,
         loans: Int,
-        plagueMultiplier: Double
-    ): Flow<UiState> {
-        return _incomeFlow
+        plagueTaxIncome: Double
+    ): Flow<UiState> = flow {
+        emit(UiState.Loading)
+        val income = baseTax + vassalTax + emperorIncome -
+                (regularUnits * 1.0) -
+                (mercenaryUnits * 2.0) -
+                (ships * 0.5) -
+                (loans * 1.0) -
+                (plagueTaxIncome * 0.5)
+        val corruption = when {
+            income < 50 -> CorruptionLevel.Low
+            income < 60 -> CorruptionLevel.Medium
+            income < 70 -> CorruptionLevel.High
+            else        -> CorruptionLevel.VeryHigh
+        }
+        emit(UiState.Success(income, corruption))
     }
 }

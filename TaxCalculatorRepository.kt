@@ -5,6 +5,9 @@ import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.update
 
+/**
+ * Repository for calculating tax income.
+ */
 sealed class UiState {
     data class Success(val income: Double, val corruptionLevel: CorruptionLevel) : UiState()
     object Loading : UiState()
@@ -18,6 +21,9 @@ sealed class CorruptionLevel(val value: Int) {
     object VeryHigh : CorruptionLevel(3)
 }
 
+/**
+ * Interface for calculating tax income.
+ */
 interface TaxCalculatorRepository {
     fun calculateIncome(
         baseTax: Double,
@@ -31,6 +37,9 @@ interface TaxCalculatorRepository {
     ): Flow<UiState>
 }
 
+/**
+ * Implementation of TaxCalculatorRepository.
+ */
 class TaxCalculatorRepositoryImpl : TaxCalculatorRepository {
     private val _incomeFlow = MutableStateFlow<UiState>(Loading)
     override fun calculateIncome(

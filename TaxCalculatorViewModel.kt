@@ -1,4 +1,4 @@
-package pl.rafapp.europauniversaliscalculator.ui.viewmodel
+package pl.rafapp.europauniversaliscalculator.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
@@ -9,6 +9,9 @@ import pl.rafapp.europauniversaliscalculator.data.TaxCalculatorRepository
 import pl.rafapp.europauniversaliscalculator.data.UiState
 import pl.rafapp.europauniversaliscalculator.data.CorruptionLevel
 
+/**
+ * ViewModel for handling tax income calculations.
+ */
 class TaxCalculatorViewModel(private val repository: TaxCalculatorRepository) : ViewModel() {
     private val _uiState = MutableStateFlow<UiState>(UiState.Loading)
     val uiState: StateFlow<UiState> get() = _uiState
